@@ -1,7 +1,7 @@
 //
 // Utilities.swift
 //
-// Copyright (c) 2015-2016 Damien (http://delba.io)
+// Copyright (c) 2015-2019 Damien (http://delba.io)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -24,9 +24,7 @@
 
 import UIKit
 
-extension UIControl.Event: Hashable {
-    public var hashValue: Int { return Int(rawValue) }
-}
+extension UIControl.Event: Hashable {}
 
 internal extension UIGestureRecognizer.State {
     static let all = [
