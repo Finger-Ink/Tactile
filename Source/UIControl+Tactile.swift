@@ -1,7 +1,7 @@
 //
 // UIControl+Tactile.swift
 //
-// Copyright (c) 2015-2016 Damien (http://delba.io)
+// Copyright (c) 2015-2019 Damien (http://delba.io)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,56 +22,58 @@
 // SOFTWARE.
 //
 
+import UIKit
+
 public extension Tactile where Self: UIControl {
     /**
         Attaches an event handler function for an event.
     
-        - parameter event: A UIControlEvents event
+        - parameter event: A UIControl event
         
         - parameter callback: The event handler function
         
         - returns: The control
     */
     @discardableResult
-    func on(_ event: UIControl.Event, _ callback: @escaping (Self) -> Void) -> Self {
+    func on(_ event: Event, _ callback: @escaping (Self) -> Void) -> Self {
         let actor = Actor(control: self, event: event, callback: callback)
-        
+
         addTarget(actor.proxy, action: .recognized, for: event)
-        
+
         return self
     }
-    
+
     /**
         Attaches an event handler function for multiple events.
     
-        - parameter events: An array of UIControlEvents
+        - parameter events: An array of UIControl events
         
         - parameter callback: The event handler function
         
         - returns: The control
     */
     @discardableResult
-    func on(_ events: [UIControl.Event], _ callback: @escaping (Self) -> Void) -> Self {
+    func on(_ events: [Event], _ callback: @escaping (Self) -> Void) -> Self {
         for event in events {
             on(event, callback)
         }
-        
+
         return self
     }
-    
+
     /**
         Attaches event handler functions for different events.
         
-        - parameter callbacks: A dictionary with a UIControlEvents event as the key and an event handler function as the value
+        - parameter callbacks: A dictionary with a UIControl event as the key and an event handler function as the value
         
         - returns: The control
     */
     @discardableResult
-    func on(_ callbacks: [UIControl.Event: (Self) -> Void]) -> Self {
+    func on(_ callbacks: [Event: (Self) -> Void]) -> Self {
         for (event, callback) in callbacks {
             on(event, callback)
         }
-        
+
         return self
     }
 }
@@ -85,12 +87,11 @@ private protocol Triggerable {
 private struct Actor<T: UIControl>: Triggerable {
     let callback: (T) -> Void
     var proxy: Proxy?
-    
     init(control: T, event: UIControl.Event, callback: @escaping (T) -> Void) {
         self.callback = callback
         self.proxy = Proxy(actor: self, control: control, event: event)
     }
-    
+
     func trigger(_ control: UIControl) {
         if let control = control as? T {
             callback(control)
@@ -106,16 +107,16 @@ private extension UIControl {
     var proxies: [UInt: Proxy] {
         get {
             var proxies: [UInt: Proxy] = [:]
-            
+
             synchronized {
                 if let lookup = objc_getAssociatedObject(self, &key) as? [UInt: Proxy] {
                     proxies = lookup
                 }
             }
-            
+
             return proxies
         }
-        
+
         set {
             synchronized {
                 objc_setAssociatedObject(self, &key, newValue, .OBJC_ASSOCIATION_RETAIN)
@@ -126,14 +127,13 @@ private extension UIControl {
 
 private class Proxy: NSObject {
     var actor: Triggerable?
-    
     init(actor: Triggerable, control: UIControl, event: UIControl.Event) {
         super.init()
-        
+
         self.actor = actor
         control.proxies[event.rawValue] = self
     }
-    
+
     @objc func recognized(_ control: UIControl) {
         actor?.trigger(control)
     }

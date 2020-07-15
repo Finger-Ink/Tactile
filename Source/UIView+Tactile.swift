@@ -1,7 +1,7 @@
 //
 // UIView+Tactile.swift
 //
-// Copyright (c) 2015-2016 Damien (http://delba.io)
+// Copyright (c) 2015-2019 Damien (http://delba.io)
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,6 +22,8 @@
 // SOFTWARE.
 //
 
+import UIKit
+
 public extension Tactile where Self: UIView {
     /**
         Attaches a gesture recognizer to the view for all its states.
@@ -35,12 +37,12 @@ public extension Tactile where Self: UIView {
     @discardableResult
     func on<T: UIGestureRecognizer>(_ gesture: T, _ callback: @escaping (T) -> Void) -> Self {
         let actor = Actor(gesture: gesture, callback: callback)
-        
+
         addGestureRecognizer(actor, gesture)
-        
+
         return self
     }
-    
+
     /**
         Attaches a gesture recognizer to the view for a given state.
     
@@ -55,12 +57,12 @@ public extension Tactile where Self: UIView {
     @discardableResult
     func on<T: UIGestureRecognizer>(_ gesture: T, _ state: UIGestureRecognizer.State, _ callback: @escaping (T) -> Void) -> Self {
         let actor = Actor(gesture: gesture, states: [state], callback: callback)
-        
+
         addGestureRecognizer(actor, gesture)
-        
+
         return self
     }
-    
+
     /**
         Attaches a gesture recognizer to the view for multiple states.
     
@@ -75,12 +77,12 @@ public extension Tactile where Self: UIView {
     @discardableResult
     func on<T: UIGestureRecognizer>(_ gesture: T, _ states: [UIGestureRecognizer.State], _ callback: @escaping (T) -> Void) -> Self {
         let actor = Actor(gesture: gesture, states: states, callback: callback)
-        
+
         addGestureRecognizer(actor, gesture)
-        
+
         return self
     }
-    
+
     /**
         Attaches a gesture recognizer to the view and declares callbacks for its different states.
     
@@ -93,15 +95,15 @@ public extension Tactile where Self: UIView {
     @discardableResult
     func on<T: UIGestureRecognizer>(_ gesture: T, _ callbacks: [UIGestureRecognizer.State: (T) -> Void]) -> Self {
         let actor = Actor(gesture: gesture, callbacks: callbacks)
-        
+
         addGestureRecognizer(actor, gesture)
-        
+
         return self
     }
-    
+
     fileprivate func addGestureRecognizer<T: UIGestureRecognizer>(_ actor: Actor<T>, _ gesture: T) {
         guard let proxy = actor.proxy else { return }
-        
+
         gesture.addTarget(proxy, action: .recognized)
         addGestureRecognizer(gesture)
     }
@@ -120,10 +122,10 @@ public extension Tactile where Self: UIView {
     @discardableResult
     func off(_ gesture: UIGestureRecognizer) -> Self {
         removeGestureRecognizer(gesture)
-        
+
         return self
     }
-    
+
     /**
         Detaches all the gestures recognizer of a given type from the receiving view.
     
@@ -134,14 +136,14 @@ public extension Tactile where Self: UIView {
     @discardableResult
     func off<T: UIGestureRecognizer>(_ gestureType: T.Type) -> Self {
         guard let gestures = gestureRecognizers else { return self }
-        
+
         for gesture in gestures where gesture is T {
             removeGestureRecognizer(gesture)
         }
-        
+
         return self
     }
-    
+
     /**
         Detaches all the gestures recognizer from the receiving view.
     
@@ -150,11 +152,11 @@ public extension Tactile where Self: UIView {
     @discardableResult
     func off() -> Self {
         guard let gestures = gestureRecognizers else { return self }
-        
+
         for gesture in gestures {
             removeGestureRecognizer(gesture)
         }
-        
+
         return self
     }
 }
@@ -163,11 +165,11 @@ public extension Tactile where Self: UIView {
 
 public extension Tactile where Self: UIView {
     typealias LongPressCallback = (UILongPressGestureRecognizer) -> Void
-    
+
     fileprivate var longPress: UILongPressGestureRecognizer {
         return UILongPressGestureRecognizer()
     }
-    
+
     /**
         Attaches an instance of UILongPressGestureRecognizer to the view for all its states.
     
@@ -179,7 +181,7 @@ public extension Tactile where Self: UIView {
     func longPress(_ callback: @escaping LongPressCallback) -> Self {
         return on(longPress, callback)
     }
-    
+
     /**
         Attaches an instance of UILongPressGestureRecognizer to the view for a given state.
     
@@ -192,7 +194,7 @@ public extension Tactile where Self: UIView {
     func longPress(_ state: UIGestureRecognizer.State, _ callback: @escaping LongPressCallback) -> Self {
         return on(longPress, state, callback)
     }
-    
+
     /**
         Attaches an instance of UILongPressGestureRecognizer to the view for a multiple states.
     
@@ -205,7 +207,7 @@ public extension Tactile where Self: UIView {
     func longPress(_ states: [UIGestureRecognizer.State], _ callback: @escaping LongPressCallback) -> Self {
         return on(longPress, states, callback)
     }
-    
+
     /**
         Attaches an instance of UILongPressGestureRecognizer to the view and declares callbacks for its different states.
     
@@ -223,11 +225,11 @@ public extension Tactile where Self: UIView {
 
 public extension Tactile where Self: UIView {
     typealias PanCallback = (UIPanGestureRecognizer) -> Void
-    
+
     fileprivate var pan: UIPanGestureRecognizer {
         return UIPanGestureRecognizer()
     }
-    
+
     /**
         Attaches an instance of UIPanGestureRecognizer to the view for all its states.
     
@@ -239,7 +241,7 @@ public extension Tactile where Self: UIView {
     func pan(_ callback: @escaping PanCallback) -> Self {
         return on(pan, callback)
     }
-    
+
     /**
         Attaches an instance of UIPanGestureRecognizer to the view for a given state.
     
@@ -252,7 +254,7 @@ public extension Tactile where Self: UIView {
     func pan(_ state: UIGestureRecognizer.State, _ callback: @escaping PanCallback) -> Self {
         return on(pan, state, callback)
     }
-    
+
     /**
         Attaches an instance of UIPanGestureRecognizer to the view for a multiple states.
     
@@ -265,7 +267,7 @@ public extension Tactile where Self: UIView {
     func pan(_ states: [UIGestureRecognizer.State], _ callback: @escaping PanCallback) -> Self {
         return on(pan, states, callback)
     }
-    
+
     /**
         Attaches an instance UIPanGestureRecognizer to the view and declares callbacks for its different states.
     
@@ -283,11 +285,11 @@ public extension Tactile where Self: UIView {
 
 public extension Tactile where Self: UIView {
     typealias PinchCallback = (UIPinchGestureRecognizer) -> Void
-    
+
     fileprivate var pinch: UIPinchGestureRecognizer {
         return UIPinchGestureRecognizer()
     }
-    
+
     /**
         Attaches an instance of UIPinchGestureRecognizer to the view for all its states.
     
@@ -299,7 +301,7 @@ public extension Tactile where Self: UIView {
     func pinch(_ callback: @escaping PinchCallback) -> Self {
         return on(pinch, callback)
     }
-    
+
     /**
         Attaches an instance of UIPinchGestureRecognizer to the view for a given state.
     
@@ -312,7 +314,7 @@ public extension Tactile where Self: UIView {
     func pinch(_ state: UIGestureRecognizer.State, _ callback: @escaping PinchCallback) -> Self {
         return on(pinch, state, callback)
     }
-    
+
     /**
         Attaches an instance of UIPinchGestureRecognizer to the view for a multiple states.
     
@@ -325,7 +327,7 @@ public extension Tactile where Self: UIView {
     func pinch(_ states: [UIGestureRecognizer.State], _ callback: @escaping PinchCallback) -> Self {
         return on(pinch, states, callback)
     }
-    
+
     /**
         Attaches an instance UIPinchGestureRecognizer to the view and declares callbacks for its different states.
     
@@ -343,11 +345,11 @@ public extension Tactile where Self: UIView {
 
 public extension Tactile where Self: UIView {
     typealias RotationCallback = (UIRotationGestureRecognizer) -> Void
-    
+
     fileprivate var rotation: UIRotationGestureRecognizer {
         return UIRotationGestureRecognizer()
     }
-    
+
     /**
         Attaches an instance of UIRotationGestureRecognizer to the view.
     
@@ -359,7 +361,7 @@ public extension Tactile where Self: UIView {
     func rotation(_ callback: @escaping RotationCallback) -> Self {
         return on(rotation, callback)
     }
-    
+
     /**
         Attaches an instance of UIRotationGestureRecognizer to the view for a given state.
     
@@ -372,7 +374,7 @@ public extension Tactile where Self: UIView {
     func rotation(_ state: UIGestureRecognizer.State, _ callback: @escaping RotationCallback) -> Self {
         return on(rotation, state, callback)
     }
-    
+
     /**
         Attaches an instance of UIRotationGestureRecognizer to the view for a multiple states.
     
@@ -385,7 +387,7 @@ public extension Tactile where Self: UIView {
     func rotation(_ states: [UIGestureRecognizer.State], _ callback: @escaping RotationCallback) -> Self {
         return on(rotation, states, callback)
     }
-    
+
     /**
         Attaches an instance UIRotationGestureRecognizer to the view and declares callbacks for its different states.
     
@@ -403,11 +405,11 @@ public extension Tactile where Self: UIView {
 
 public extension Tactile where Self: UIView {
     typealias SwipeCallback = (UISwipeGestureRecognizer) -> Void
-    
+
     fileprivate var swipe: UISwipeGestureRecognizer {
         return UISwipeGestureRecognizer()
     }
-    
+
     /**
         Attaches an instance of UISwipeGestureRecognizer to the view for all its states.
     
@@ -419,7 +421,7 @@ public extension Tactile where Self: UIView {
     func swipe(_ callback: @escaping SwipeCallback) -> Self {
         return on(swipe, callback)
     }
-    
+
     /**
         Attaches an instance of UISwipeGestureRecognizer to the view for a given state.
     
@@ -432,7 +434,7 @@ public extension Tactile where Self: UIView {
     func swipe(_ state: UIGestureRecognizer.State, _ callback: @escaping SwipeCallback) -> Self {
         return on(swipe, state, callback)
     }
-    
+
     /**
         Attaches an instance of UISwipeGestureRecognizer to the view for a multiple states.
     
@@ -445,7 +447,7 @@ public extension Tactile where Self: UIView {
     func swipe(_ states: [UIGestureRecognizer.State], _ callback: @escaping SwipeCallback) -> Self {
         return on(swipe, states, callback)
     }
-    
+
     /**
         Attaches an instance UISwipeGestureRecognizer to the view and declares callbacks for its different states.
     
@@ -463,11 +465,11 @@ public extension Tactile where Self: UIView {
 
 public extension Tactile where Self: UIView {
     typealias TapCallback = (UITapGestureRecognizer) -> Void
-    
+
     fileprivate var tap: UITapGestureRecognizer {
         return UITapGestureRecognizer()
     }
-    
+
     /**
         Attaches an instance of UITapGestureRecognizer to the view for all its states.
     
@@ -479,7 +481,7 @@ public extension Tactile where Self: UIView {
     func tap(_ callback: @escaping TapCallback) -> Self {
         return on(tap, callback)
     }
-    
+
     /**
         Attaches an instance of UITapGestureRecognizer to the view for a given state.
     
@@ -492,7 +494,7 @@ public extension Tactile where Self: UIView {
     func tap(_ state: UIGestureRecognizer.State, _ callback: @escaping TapCallback) -> Self {
         return on(tap, state, callback)
     }
-    
+
     /**
         Attaches an instance of UITapGestureRecognizer to the view for a multiple states.
     
@@ -505,7 +507,7 @@ public extension Tactile where Self: UIView {
     func tap(_ states: [UIGestureRecognizer.State], _ callback: @escaping TapCallback) -> Self {
         return on(tap, states, callback)
     }
-    
+
     /**
         Attaches an instance UITapGestureRecognizer to the view and declares callbacks for its different states.
     
@@ -528,28 +530,28 @@ private protocol Triggerable {
 private struct Actor<T: UIGestureRecognizer>: Triggerable {
     typealias State = UIGestureRecognizer.State
     typealias Callback = (T) -> Void
-    
+
     var callbacks: [State: Callback] = [:]
-    
+
     var proxy: Proxy?
 
     init(gesture: T, states: [State] = State.all, callback: @escaping Callback) {
         let gesture = gesture.proxy == nil ? gesture : gesture.clone()
-        
+
         for state in states {
             self.callbacks[state] = callback
         }
-        
+
         self.proxy = Proxy(actor: self, gesture: gesture)
     }
-    
+
     init(gesture: T, callbacks: [State: Callback]) {
         let gesture = gesture.proxy == nil ? gesture : gesture.clone()
-        
+
         self.callbacks = callbacks
         self.proxy = Proxy(actor: self, gesture: gesture)
     }
-    
+
     func trigger(_ gesture: UIGestureRecognizer) {
         if let gesture = gesture as? T, let callback = callbacks[gesture.state] {
             callback(gesture)
@@ -565,14 +567,14 @@ extension UIGestureRecognizer {
     fileprivate var proxy: Proxy? {
         get {
             var proxy: Proxy?
-            
+
             synchronized {
                 proxy = objc_getAssociatedObject(self, &key) as? Proxy
             }
-            
+
             return proxy
         }
-        
+
         set {
             synchronized {
                 objc_setAssociatedObject(self, &key, newValue, .OBJC_ASSOCIATION_RETAIN)
@@ -583,13 +585,13 @@ extension UIGestureRecognizer {
 
 private class Proxy: NSObject {
     var actor: Triggerable?
-    
+
     init(actor: Triggerable, gesture: UIGestureRecognizer) {
         super.init()
         self.actor = actor
         gesture.proxy = self
     }
-    
+
     @objc func recognized(_ gesture: UIGestureRecognizer) {
         actor?.trigger(gesture)
     }
